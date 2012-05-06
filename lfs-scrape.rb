@@ -32,7 +32,7 @@ def write_out_script(node_title)
   padded_cnt = sprintf '%03d', @script_cnt.to_s 
   script_name = node_title.downcase!.gsub(/\n/," ").strip
   filename = @script_dir + '/' + padded_cnt + '-' + script_name.squeeze(" ").gsub(/ /, '') + '.sh'
-  pkg_name = node_title.split(" -").first.strip
+  pkg_name = node_title.split(" -").first.split(' ').first.strip
   puts "writing  : #{filename}"
   script_file = File.open(filename, "w") do |f|
     f.write("#!/tools/bin/bash -xe\n")
