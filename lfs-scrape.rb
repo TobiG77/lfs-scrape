@@ -32,14 +32,27 @@ def write_out_script(node_title)
   padded_cnt = sprintf '%03d', @script_cnt.to_s 
   script_name = node_title.downcase!.gsub(/\n/," ").strip
   filename = @script_dir + '/' + padded_cnt + '-' + script_name.squeeze(" ").gsub(/ /, '') + '.sh'
-  pkg_name = node_title.split(" -").first.split(' ').first.strip
+  pkg_name = node_title.split(" -").first.split(' ').first.strip.gsub(/[^a-zA-Z0-9]/, '*')
   puts "writing  : #{filename}"
   script_file = File.open(filename, "w") do |f|
     f.write("#!/tools/bin/bash -xe\n")
     f.write("# #{script_name}\n")
-    f.write("[ -e #{pkg_name}.tar.* ] && tar -xf #{pkg_name}.tar.* && cd #{pkg_name}*\n")
+
+    f.write("cd /mnt/lfs/sources\n")
+    f.write("tar_name=`ls #{pkg_name}*tar.*`\n")
+    f.write("if [ -n \"$tar_name\" ]\n")
+    f.write("then\n")
+    f.write("  cd /mnt/lfs/builds\n")
+    f.write("  tar -xf /mnt/lfs/sources/$tar_name\n")
+    f.write("  dir_name=`tar -tf /mnt/lfs/sources/$tar_name | head -n 1|awk -F'/' '{print $1}'`\n")
+    f.write("  cd $dir_name\n")
+    f.write("fi\n")
+    
     @script_code.each {|line|
                        line = "make #{@smp_mflags}" if line == "make"
+                       line = line.gsub(/patch -Np1 -i ../, 'patch -Np1 -i /mnt/lfs/sources')
+                       line = line.gsub(/tar -[a-zA-Z]* ../, 'tar -xf /mnt/lfs/sources')
+                       line.strip!
                        f.write("#{line}\n")
                       }
   end
