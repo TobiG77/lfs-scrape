@@ -9,8 +9,6 @@ to frequently adapt to the upstream version, while minimizing the changes to cod
 
 This scraper will parse through the LFS website and dump any code section into shell scriptlets.
 
-  *This will run the downloads concurrently, since they're from a wide range of servers*
-  *it utilizes bandwidth much better and takes only a very fraction of the time compared*
-  *to sequentially downloading the sources *
+  *This will run the downloads concurrently, since they're from a wide range of servers it utilizes bandwidth much better and takes only a very fraction of the time compared to sequentially downloading the sources*
 
   > wget -O /dev/stdout http://www.linuxfromscratch.org/lfs/view/stable/wget-list | while read url; do   wget -bc $url; done
