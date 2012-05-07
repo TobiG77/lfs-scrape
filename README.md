@@ -13,13 +13,3 @@ This scraper will parse through the LFS website and dump any code section into s
 
   > wget -O /dev/stdout http://www.linuxfromscratch.org/lfs/view/stable/wget-list | while read url; do   wget -bc $url; done
 
-  *a very small script to run through the scripts of chapter 5*
-
-  > #!/bin/bash -xe
-  > rm -f /mnt/lfs/chapter05/00{1,2,3}*.sh
-  > for s in /mnt/lfs/chapter05/*sh
-  > do
-  >  # this really only works with the bash shell
-  >  bash -xe $s
-  > done
-
