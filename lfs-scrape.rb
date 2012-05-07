@@ -5,6 +5,9 @@ require 'nokogiri'
 require 'open-uri'
 require 'awesome_print'
 
+# async would be nice, but that would mean we loose order, right?
+# or we enumerate articles quickly and then set of async fetching
+
 @lfs_branch = 'stable'
 
 # set smp flags based on a conversation with Con Kolivas 
@@ -84,5 +87,3 @@ doc.xpath('//li/a').each do |node|
   end
   
 end
-
-    
