@@ -38,20 +38,23 @@ def write_out_script(node_title)
   filename = @script_dir + '/' + padded_cnt + '-' + script_name.squeeze(" ").gsub(/ /, '') + '.sh'
   pkg_name = node_title.split(" -").first.split(' ').first.strip.gsub(/[^a-zA-Z0-9]/, '*')
   puts "writing  : #{filename}"
-  script_file = File.open(filename, "w") do |f|
-    f.write("#!/tools/bin/bash -xe\n")
-    f.write("# #{script_name}\n")
+  script_body = <<"HERE"
+#!/tools/bin/bash -xe
+# #{script_name}
 
-    f.write("cd #{@script_prefix}/sources\n")
-    f.write("tar_name=`ls #{pkg_name}*tar.*`\n")
-    f.write("if [ -n \"$tar_name\" ]\n")
-    f.write("then\n")
-    f.write("  cd #{@script_prefix}/builds\n")
-    f.write("  tar -xf #{@script_prefix}/sources/$tar_name\n")
-    f.write("  dir_name=`tar -tf #{@script_prefix}/sources/$tar_name | head -n 1|awk -F'/' '{print $1}'`\n")
-    f.write("  cd $dir_name\n")
-    f.write("fi\n")
-    
+cd #{@script_prefix}/sources
+tar_name=`ls #{pkg_name}*tar.*`
+if [ -n \"$tar_name\" ]
+then
+  cd #{@script_prefix}/builds
+  tar -xf #{@script_prefix}/sources/$tar_name
+  dir_name=`tar -tf #{@script_prefix}/sources/$tar_name | head -n 1|awk -F'/' '{print $1}'`
+  cd $dir_name
+fi
+HERE
+
+  script_file = File.open(filename, "w") do |f|
+    f.write(script_body)
     @script_code.each {|line|
                        line = "make #{@smp_mflags}" if line == "make"
                        line = line.gsub(/patch -Np1 -i ../, "patch -Np1 -i #{@script_prefix}/sources")
@@ -69,7 +72,7 @@ doc = Nokogiri::HTML(open(@lfs_index_url))
 @script_cnt = 1
 
 doc.xpath('//li/a').each do |node|
-  
+
   if node.key?('href') && node.values.first.match('chapter0')
     if node.values.first.match(/chapter0[5,6]/)
       @chapter = node.values.first.split('/').first
@@ -85,5 +88,5 @@ doc.xpath('//li/a').each do |node|
       write_out_script node.text if @script_code
     end
   end
-  
+
 end

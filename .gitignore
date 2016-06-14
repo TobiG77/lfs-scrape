@@ -15,3 +15,5 @@
 /tmp
 *~
 *kate-swp
+.idea/
+lfs-scrape.iml
